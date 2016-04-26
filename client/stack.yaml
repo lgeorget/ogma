@@ -1,0 +1,27 @@
+resolver: lts-5.12
+
+compiler: ghcjs-0.2.0.20160414_ghc-7.10.3
+compiler-check: match-exact
+setup-info:
+  ghcjs:
+    source:
+      ghcjs-0.2.0.20160414_ghc-7.10.3:
+        url: https://s3.amazonaws.com/ghcjs/ghcjs-0.2.0.20160414_ghc-7.10.3.tar.gz
+        sha1: 6d6f307503be9e94e0c96ef1308c7cf224d06be3
+
+packages:
+- '../api'
+- '.'
+- location:
+    git: https://github.com/reflex-frp/reflex
+    commit: 3a7fb30dde160bc31c0bba4f42f7666ea6ca054a
+- location:
+    git: https://github.com/lethom/servant-reflex.git
+    commit: a64e88f95938145687a0326d480092ac54f4ee93
+extra-deps:
+  - ghcjs-dom-0.2.3.1
+  - ref-tf-0.4
+  - servant-0.7
+  - reflex-dom-0.3
+flags: {}
+extra-package-dbs: []

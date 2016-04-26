@@ -1,0 +1,10 @@
+resolver: lts-5.12
+
+packages:
+- '../api'
+- '.'
+extra-deps:
+  - servant-0.7
+  - servant-server-0.7
+flags: {}
+extra-package-dbs: []
