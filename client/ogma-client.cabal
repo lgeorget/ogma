@@ -28,8 +28,8 @@ executable ogma-client
                      , servant-reflex   == 0.1
                      , servant          == 0.7
                      , ogma-api         == 0.0
-                     , ogma-client      == 0.1
                      , text             == 1.2.*
+                     , ogma-client
   default-language:    Haskell2010
 
 test-suite client-test
