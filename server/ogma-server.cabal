@@ -37,10 +37,16 @@ executable ogma-server-exe
   build-depends:       base
                      , ogma-server
                      , ogma-api          == 0.0
-                     , servant-server    == 0.7
+                     , servant-server    == 0.7.1
+                     , auth-identity
                      , wai
                      , wai-cors
                      , warp
+                     , text
+                     , persistent
+                     , persistent-template
+                     , persistent-sqlite
+                     , transformers
   default-language:    Haskell2010
 
 test-suite ogma-server-test
