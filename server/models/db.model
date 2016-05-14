@@ -1,0 +1,21 @@
+User
+  login          Text
+  identity       Auth.IdentityId
+  email          Text
+  UniqueLogin    login
+  UniqueIdentity identity
+
+Document
+  owner          UserId
+  dirname        Text
+  title          Text
+  createdon      UTCTime
+  modifiedon     UTCTime
+  size           Int
+  UniqueDirname  dirname
+
+Permission
+  document       DocumentId
+  user           UserId
+  privilege      Privilege
+  UniqueDocUser  document user
