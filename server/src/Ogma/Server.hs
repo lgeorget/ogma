@@ -1,3 +1,4 @@
+{-# LANGUAGE DataKinds             #-}
 {-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
@@ -10,17 +11,19 @@ module Ogma.Server where
 import Control.Monad.Except
 import Control.Monad.Reader
 import Data.Maybe
+import Data.Text (Text)
+import Data.Time
 import Database.Persist.Sql
+import GHC.Int
 import Network.Wai
 import Network.Wai.Middleware.RequestLogger
 import Servant
-import Data.Text (Text)
-import Data.Time
 
-import Ogma.Api.Definition
-import Data.Auth.Token
-import Data.Auth.Identity
 import Auth.Identity.Servant
+import Data.Auth.Identity
+import Data.Auth.Token
+import Ogma.Api.Definition
+import Ogma.Model.Model
 
 data OgmaConfig = OgmaConfig { getPool       :: ConnectionPool
                              , accessSize    :: TokenSize
@@ -35,8 +38,12 @@ queryDb :: SqlPersistT OgmaM a
 queryDb backReq = do pool <- getPool <$> ask
                      runSqlPool backReq pool
 
-accountNewH :: AccountNewPost -> OgmaM ()
-accountNewH _ = throwError err400
+accountNewH :: AccountNewPost -> OgmaM (Headers '[Header "resource-id" Int64] NoContent)
+accountNewH (AccountNewPost email login) = do
+    userMaybe <- queryDb $ createNewUser login email
+
+    case userMaybe of Just id -> return $ addHeader (fromSqlKey id) NoContent
+                      Nothing -> throwError $ err403 { errBody = "Login or email have already been taken" }
 
 server :: ServerT OgmaAPI OgmaM
 server = accountNewH

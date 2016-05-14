@@ -29,7 +29,7 @@ share [mkPersist sqlSettings, mkMigrate "migrateAll"]
 createNewUser :: (MonadBaseControl IO m, MonadIO m, Monad m)
               => Text
               -> Text
-              -> SqlPersistT m UserId
+              -> SqlPersistT m (Maybe UserId)
 createNewUser login email = do
     identity <- Auth.newIdentity
-    insert $ User login identity email
+    insertUnique $ User login identity email

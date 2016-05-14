@@ -12,13 +12,14 @@ Stability   : experimental
 
 module Ogma.Api.Definition where
 
-import           GHC.Generics
-import           Data.Text   (Text)
-import           Servant.API
 import           Data.Aeson
 import           Data.Aeson.Types
 import           Data.Proxy
-import Data.Char (toLower)
+import           Data.Text   (Text)
+import           GHC.Generics
+import           GHC.Int
+import           Servant.API
+import           Data.Char (toLower)
 
 data AccountNewPost = AccountNewPost { accountNewEmail :: Text
                                      , accountNewLogin :: Text }
@@ -30,7 +31,10 @@ instance ToJSON AccountNewPost where
 instance FromJSON AccountNewPost where
   parseJSON = genericParseJSON defaultOptions { fieldLabelModifier = map toLower . drop 10 }
 
-type OgmaAPI = "account" :> "new" :> ReqBody '[JSON] AccountNewPost :> PostCreated '[JSON] ()
+type OgmaAPI = "account"
+            :> "new"
+            :> ReqBody '[JSON] AccountNewPost
+            :> PostCreated '[JSON] (Headers '[Header "resource-id" Int64] NoContent)
 
 ogmaAPI :: Proxy OgmaAPI
 ogmaAPI = Proxy
