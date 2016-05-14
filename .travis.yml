@@ -13,6 +13,7 @@ before_install:
   - chmod a+x ~/.local/bin/stack
 
 install:
+  - stack install happy
   - stack setup --stack-yaml=api/stack.yaml
   - stack setup --stack-yaml=server/stack.yaml
   - stack setup --stack-yaml=client/stack.yaml
