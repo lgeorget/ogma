@@ -17,7 +17,7 @@ packages:
     commit: 3a7fb30dde160bc31c0bba4f42f7666ea6ca054a
 - location:
     git: https://github.com/lethom/servant-reflex.git
-    commit: a64e88f95938145687a0326d480092ac54f4ee93
+    commit: 15d1bb9a33e0961aea1110810fc7d517dd504490
 extra-deps:
   - ghcjs-dom-0.2.3.1
   - ref-tf-0.4

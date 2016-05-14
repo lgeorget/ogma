@@ -18,7 +18,7 @@ getHello :: forall t m.MonadWidget t m
          -> m (Event t (Maybe Hello, XhrResponse))
 getHello = client (Proxy :: Proxy OgmaApi)
                   (Proxy :: Proxy m)
-                  (constDyn $ BaseUrl Http "localhost" 8080 "/")
+                  (constDyn $ BaseUrl Http "localhost" 8080 "")
 
 gui :: forall t m.MonadWidget t m
     => m ()
