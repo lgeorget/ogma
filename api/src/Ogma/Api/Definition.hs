@@ -18,16 +18,17 @@ import           Servant.API
 import           Data.Aeson
 import           Data.Aeson.Types
 import           Data.Proxy
+import Data.Char (toLower)
 
 data AccountNewPost = AccountNewPost { accountNewEmail :: Text
                                      , accountNewLogin :: Text }
   deriving (Generic)
 
 instance ToJSON AccountNewPost where
-  toJSON = genericToJSON defaultOptions { fieldLabelModifier = drop 10 }
+  toJSON = genericToJSON defaultOptions { fieldLabelModifier = map toLower . drop 10 }
 
 instance FromJSON AccountNewPost where
-  parseJSON = genericParseJSON defaultOptions { fieldLabelModifier = drop 10 }
+  parseJSON = genericParseJSON defaultOptions { fieldLabelModifier = map toLower . drop 10 }
 
 type OgmaAPI = "account" :> "new" :> ReqBody '[JSON] AccountNewPost :> PostCreated '[JSON] ()
 

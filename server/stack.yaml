@@ -5,7 +5,7 @@ packages:
 - '.'
 - location:
     git: https://github.com/lethom/auth-identity.git
-    commit: f5995df216c343993c33cd1b84c1484670ca295d
+    commit: 6d7d159a4c47e0872dc0bb06de59efea01089771
 extra-deps:
   - servant-0.7.1
   - servant-server-0.7.1
