@@ -3,6 +3,9 @@ resolver: lts-5.12
 packages:
 - '../api'
 - '.'
+- location:
+    git: https://github.com/lethom/auth-identity.git
+    commit: f5995df216c343993c33cd1b84c1484670ca295d
 extra-deps:
   - servant-0.7
   - servant-server-0.7

@@ -14,12 +14,20 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Ogma.Api
+  exposed-modules:     Ogma.Api Ogma.Model.Model Ogma.Model.Privilege
   build-depends:       base >= 4.7 && < 5
                      , ogma-api        == 0.0
-                     , servant-server  == 0.7
+                     , servant-server  == 0.7.1
+                     , auth-identity
                      , aeson
                      , text
+                     , persistent
+                     , persistent-template
+                     , persistent-sqlite
+                     , time
+                     , mtl
+                     , transformers
+                     , monad-control
   default-language:    Haskell2010
 
 executable ogma-server-exe
