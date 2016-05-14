@@ -45,8 +45,26 @@ accountNewH (AccountNewPost email login) = do
     case userMaybe of Just id -> return $ addHeader (fromSqlKey id) NoContent
                       Nothing -> throwError $ err403 { errBody = "Login or email have already been taken" }
 
+authTokenToGetToken :: AuthToken -> GetTokenResponse
+authTokenToGetToken (AuthToken ac re exAc _ _) = GetTokenResponse (unToken ac) (unToken re) exAc
+
+getTokenH :: GetTokenPost
+          -> OgmaM GetTokenResponse
+getTokenH (GetTokenPost login) = do
+    logMaybe <- queryDb $ getUserByLogin login
+
+    case logMaybe of Just (Entity _ usr) -> do
+                       acSize <- accessSize <$> ask
+                       reSize <- refreshSize <$> ask
+                       acExp <- accessExpire <$> ask
+                       reExp <- refreshExpire <$> ask
+
+                       authTok <- queryDb $ regenTokens (userIdentity usr) acExp reExp acSize reSize
+                       return $ authTokenToGetToken authTok
+                     Nothing -> throwError $ err403 { errBody = "Login unknown" }
+
 server :: ServerT OgmaAPI OgmaM
-server = accountNewH
+server = accountNewH :<|> getTokenH
 
 readerToExcept :: OgmaConfig
                -> OgmaM
