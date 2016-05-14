@@ -16,11 +16,20 @@ import           GHC.Generics
 import           Data.Text   (Text)
 import           Servant.API
 import           Data.Aeson
+import           Data.Aeson.Types
+import           Data.Proxy
 
-data Hello = Hello { hello :: Text }
+data AccountNewPost = AccountNewPost { accountNewEmail :: Text
+                                     , accountNewLogin :: Text }
   deriving (Generic)
 
-instance ToJSON Hello
-instance FromJSON Hello
+instance ToJSON AccountNewPost where
+  toJSON = genericToJSON defaultOptions { fieldLabelModifier = drop 10 }
 
-type OgmaApi = "hello" :> Get '[JSON] Hello
+instance FromJSON AccountNewPost where
+  parseJSON = genericParseJSON defaultOptions { fieldLabelModifier = drop 10 }
+
+type OgmaAPI = "account" :> "new" :> ReqBody '[JSON] AccountNewPost :> PostCreated '[JSON] ()
+
+ogmaAPI :: Proxy OgmaAPI
+ogmaAPI = Proxy
