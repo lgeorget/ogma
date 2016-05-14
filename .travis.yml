@@ -19,4 +19,5 @@ install:
   - stack setup --stack-yaml=client/stack.yaml
 
 script:
-  - make
+  - make api
+  - make server
