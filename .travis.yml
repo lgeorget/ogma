@@ -16,7 +16,7 @@ install:
   - stack install happy
   - stack setup --stack-yaml=api/stack.yaml
   - stack setup --stack-yaml=server/stack.yaml
-  - stack setup --stack-yaml=client/stack.yaml
+# - stack setup --stack-yaml=client/stack.yaml
 
 script:
   - make api
