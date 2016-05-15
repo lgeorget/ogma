@@ -45,6 +45,17 @@ getUserByLogin :: (MonadBaseControl IO m, MonadIO m, Monad m)
                -> SqlPersistT m (Maybe (Entity User))
 getUserByLogin login = getBy (UniqueLogin login)
 
+createUpdateDocPerm :: (MonadBaseControl IO m, MonadIO m, Monad m)
+                    => UserId
+                    -> DocumentId
+                    -> Privilege
+                    -> SqlPersistT m ()
+createUpdateDocPerm userId docId perm = do
+    deleteBy (UniqueDocUser docId userId) -- delete old perms
+    insertUnique $ Permission docId userId perm
+
+    return ()
+
 createNewDocument :: (MonadBaseControl IO m, MonadIO m, Monad m)
                   => UserId
                   -> Text -- title
@@ -56,5 +67,9 @@ createNewDocument id title content = do
 
     m <- insertUnique $ Document id (unToken dir) title now now 0
 
-    case m of Just id -> return (id, unToken dir)
-              _       -> createNewDocument id title content
+    (docId, dir) <- case m of Just id -> return (id, unToken dir)
+                              _       -> createNewDocument id title content
+
+    createUpdateDocPerm id docId Edit
+
+    return (docId, dir)
