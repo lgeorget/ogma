@@ -26,6 +26,7 @@ import Data.Auth.Identity
 import Data.Auth.Token
 import Ogma.Api.Definition
 import Ogma.Model.Model
+import Ogma.Model.Privilege
 
 data OgmaConfig = OgmaConfig { getPool       :: ConnectionPool
                              , accessSize    :: TokenSize
@@ -82,7 +83,20 @@ putDocumentH _ _ _ = throwError err400
 getDocumentH :: (Entity User)
              -> Int64
              -> OgmaM GetDocument
-getDocumentH _ _ = throwError err400
+getDocumentH (Entity userId _) docInt = do
+    let docId = toSqlKey docInt
+
+    perm <- queryDb $ getPerm userId docId
+
+    if perm >= ReadOnly
+    then do doc <- fromJust <$> (queryDb $ get docId) -- getPerm ensures queryDb returns something
+
+            return $ GetDocument (documentTitle doc)
+                                 "not implemented"
+                                 (documentModifiedon doc)
+                                 (documentCreatedon doc)
+                                 (stringify perm)
+    else throwError err403
 
 server :: ServerT OgmaAPI OgmaM
 server = accountNewH

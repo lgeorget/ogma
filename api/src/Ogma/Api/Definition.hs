@@ -39,10 +39,10 @@ data GetTokenResponse = GetTokenResponse { getTokenAccess  :: Text
   deriving (Generic)
 deriveJSON (defaultOptions { fieldLabelModifier = map toLower . drop 8 }) ''GetTokenResponse
 
-data DocumentPost = DocumentPost { documentTitle   :: Text
-                                 , documentContent :: Text }
+data DocumentPost = DocumentPost { postDocumentTitle   :: Text
+                                 , postDocumentContent :: Text }
   deriving (Generic)
-deriveJSON (defaultOptions { fieldLabelModifier = map toLower . drop 8 }) ''DocumentPost
+deriveJSON (defaultOptions { fieldLabelModifier = map toLower . drop 12 }) ''DocumentPost
 
 data GetDocument = GetDocument { getDocumentTitle      :: Text
                                , getDocumentContent    :: Text
@@ -50,7 +50,7 @@ data GetDocument = GetDocument { getDocumentTitle      :: Text
                                , getDocumentCreatedOn  :: UTCTime
                                , getDocumentPerm       :: Text }
   deriving (Generic)
-deriveJSON (defaultOptions { fieldLabelModifier = map toLower . drop 10 }) ''GetDocument
+deriveJSON (defaultOptions { fieldLabelModifier = map toLower . drop 11 }) ''GetDocument
 
 type OgmaAPI = "account"
                  :> "new"

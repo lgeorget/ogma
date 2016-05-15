@@ -15,6 +15,7 @@ import Database.Persist.Quasi
 import Database.Persist.Sqlite
 import Database.Persist.TH
 import Data.Time
+import Data.Maybe
 import Data.Text               (Text)
 import Control.Monad.Reader
 import Control.Monad.IO.Class
@@ -73,3 +74,11 @@ createNewDocument id title content = do
     createUpdateDocPerm id docId Edit
 
     return (docId, dir)
+
+getPerm :: (MonadBaseControl IO m, MonadIO m, Monad m)
+        => UserId
+        -> DocumentId
+        -> SqlPersistT m Privilege
+getPerm userId docId = do permMaybe <- getBy (UniqueDocUser docId userId)
+
+                          return $ fromMaybe None (permissionPrivilege . entityVal <$> permMaybe)
