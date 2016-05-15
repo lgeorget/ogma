@@ -1,11 +1,11 @@
-{-# LANGUAGE OverloadedStrings          #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Main where
 
-import           Control.Monad.IO.Class (liftIO)
-import           Control.Monad.Logger (runNoLoggingT)
+import           Control.Monad.IO.Class      (liftIO)
+import           Control.Monad.Logger        (runNoLoggingT)
 import           Data.Auth.Token
-import           Data.Text           (Text)
+import           Data.Text                   (Text)
 import           Database.Persist
 import           Database.Persist.Quasi
 import           Database.Persist.Sqlite
@@ -18,8 +18,8 @@ import           Ogma.Model.Model
 import           Ogma.Server
 import           Servant
 
-import qualified Data.Auth.Identity as Auth
-import qualified Ogma.Api            as Api
+import qualified Data.Auth.Identity          as Auth
+import qualified Ogma.Api                    as Api
 
 main :: IO ()
 main = do pool <- runNoLoggingT $ createSqlitePool "db.sqlite" 10

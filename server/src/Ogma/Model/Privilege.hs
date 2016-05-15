@@ -3,8 +3,8 @@
 
 module Ogma.Model.Privilege where
 
-import Database.Persist.TH
-import Data.String
+import           Data.String
+import           Database.Persist.TH
 
 data Privilege = None | ReadOnly | Edit
     deriving (Show, Read, Eq, Ord)

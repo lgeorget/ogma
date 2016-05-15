@@ -1,29 +1,29 @@
-{-# LANGUAGE OverloadedStrings          #-}
-{-# LANGUAGE TemplateHaskell            #-}
-{-# LANGUAGE QuasiQuotes                #-}
-{-# LANGUAGE MultiParamTypeClasses      #-}
+{-# LANGUAGE FlexibleContexts           #-}
 {-# LANGUAGE FunctionalDependencies     #-}
-{-# LANGUAGE TypeFamilies               #-}
 {-# LANGUAGE GADTs                      #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE FlexibleContexts           #-}
+{-# LANGUAGE MultiParamTypeClasses      #-}
+{-# LANGUAGE OverloadedStrings          #-}
+{-# LANGUAGE QuasiQuotes                #-}
+{-# LANGUAGE TemplateHaskell            #-}
+{-# LANGUAGE TypeFamilies               #-}
 
 module Ogma.Model.Model where
 
-import Database.Persist
-import Database.Persist.Quasi
-import Database.Persist.Sqlite
-import Database.Persist.TH
-import Data.Time
-import Data.Maybe
-import Data.Text               (Text)
-import Control.Monad.Reader
-import Control.Monad.IO.Class
-import Control.Monad.Trans.Control
-import Data.Auth.Token
+import           Control.Monad.IO.Class
+import           Control.Monad.Reader
+import           Control.Monad.Trans.Control
+import           Data.Auth.Token
+import           Data.Maybe
+import           Data.Text                   (Text)
+import           Data.Time
+import           Database.Persist
+import           Database.Persist.Quasi
+import           Database.Persist.Sqlite
+import           Database.Persist.TH
 
-import qualified Data.Auth.Identity as Auth
-import Ogma.Model.Privilege
+import qualified Data.Auth.Identity          as Auth
+import           Ogma.Model.Privilege
 
 share [mkPersist sqlSettings, mkMigrate "migrateAll"]
   $(persistFileWith lowerCaseSettings "models/db.model")

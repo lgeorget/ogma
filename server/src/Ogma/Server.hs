@@ -9,24 +9,24 @@
 
 module Ogma.Server where
 
-import Control.Monad.Except
-import Control.Monad.Reader
-import Data.Maybe
-import Data.Text (Text)
-import Data.Time
-import Database.Persist.Sql
-import GHC.Int
-import Network.Wai
-import Network.Wai.Middleware.RequestLogger
-import Servant
-import Servant.Server.Experimental.Auth
+import           Control.Monad.Except
+import           Control.Monad.Reader
+import           Data.Maybe
+import           Data.Text                            (Text)
+import           Data.Time
+import           Database.Persist.Sql
+import           GHC.Int
+import           Network.Wai
+import           Network.Wai.Middleware.RequestLogger
+import           Servant
+import           Servant.Server.Experimental.Auth
 
-import Auth.Identity.Servant
-import Data.Auth.Identity
-import Data.Auth.Token
-import Ogma.Api.Definition
-import Ogma.Model.Model
-import Ogma.Model.Privilege
+import           Auth.Identity.Servant
+import           Data.Auth.Identity
+import           Data.Auth.Token
+import           Ogma.Api.Definition
+import           Ogma.Model.Model
+import           Ogma.Model.Privilege
 
 data OgmaConfig = OgmaConfig { getPool       :: ConnectionPool
                              , accessSize    :: TokenSize
