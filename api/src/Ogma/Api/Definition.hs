@@ -1,6 +1,7 @@
-{-# LANGUAGE DataKinds     #-}
-{-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DataKinds       #-}
+{-# LANGUAGE DeriveGeneric   #-}
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TypeOperators   #-}
 
 {-|
 Module      : Ogma.Api.Definition 
@@ -14,6 +15,7 @@ module Ogma.Api.Definition where
 
 import           Data.Aeson
 import           Data.Aeson.Types
+import           Data.Aeson.TH
 import           Data.Proxy
 import           Data.Text   (Text)
 import           Data.Time
@@ -25,29 +27,30 @@ import           Data.Char (toLower)
 data AccountNewPost = AccountNewPost { accountNewEmail :: Text
                                      , accountNewLogin :: Text }
   deriving (Generic)
-
-instance ToJSON AccountNewPost where
-  toJSON = genericToJSON defaultOptions { fieldLabelModifier = map toLower . drop 10 }
-instance FromJSON AccountNewPost where
-  parseJSON = genericParseJSON defaultOptions { fieldLabelModifier = map toLower . drop 10 }
+deriveJSON (defaultOptions { fieldLabelModifier = map toLower . drop 10 }) ''AccountNewPost
 
 data GetTokenPost = GetTokenPost { getTokenLogin :: Text }
   deriving (Generic)
-
-instance ToJSON GetTokenPost where
-  toJSON = genericToJSON defaultOptions { fieldLabelModifier = map toLower . drop 8 }
-instance FromJSON GetTokenPost where
-  parseJSON = genericParseJSON defaultOptions { fieldLabelModifier = map toLower . drop 8 }
+deriveJSON (defaultOptions { fieldLabelModifier = map toLower . drop 8 }) ''GetTokenPost
 
 data GetTokenResponse = GetTokenResponse { getTokenAccess  :: Text
                                          , getTokenRefresh :: Text
                                          , getTokenExpire  :: UTCTime }
   deriving (Generic)
+deriveJSON (defaultOptions { fieldLabelModifier = map toLower . drop 8 }) ''GetTokenResponse
 
-instance ToJSON GetTokenResponse where
-  toJSON = genericToJSON defaultOptions { fieldLabelModifier = map toLower . drop 8 }
-instance FromJSON GetTokenResponse where
-  parseJSON = genericParseJSON defaultOptions { fieldLabelModifier = map toLower . drop 8 }
+data DocumentPost = DocumentPost { documentTitle   :: Text
+                                 , documentContent :: Text }
+  deriving (Generic)
+deriveJSON (defaultOptions { fieldLabelModifier = map toLower . drop 7 }) ''DocumentPost
+
+data GetDocument = GetDocument { getDocumentTitle      :: Text
+                               , getDocumentContent    :: Text
+                               , getDocumentModifiedOn :: UTCTime
+                               , getDocumentCreatedOn  :: UTCTime
+                               , getDocumentPerm       :: Text }
+  deriving (Generic)
+deriveJSON (defaultOptions { fieldLabelModifier = map toLower . drop 10 }) ''GetDocument
 
 type OgmaAPI = "account"
                  :> "new"
@@ -56,6 +59,17 @@ type OgmaAPI = "account"
           :<|> "get_token"
                  :> ReqBody '[JSON] GetTokenPost
                  :> Post '[JSON] GetTokenResponse
+          :<|> AuthProtect "auth-identity" :>
+                ("new_document"
+                 :> ReqBody '[JSON] DocumentPost
+                 :> PostCreated '[JSON] (Headers '[Header "resource-id" Int64] NoContent)
+            :<|> "document"
+                 :> Capture "id" Int64
+                 :> ReqBody '[JSON] DocumentPost
+                 :> Put '[JSON] NoContent
+            :<|> "document"
+                 :> Capture "id" Int64
+                 :> Get '[JSON] GetDocument)
 
 ogmaAPI :: Proxy OgmaAPI
 ogmaAPI = Proxy
