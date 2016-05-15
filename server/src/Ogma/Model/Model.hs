@@ -19,6 +19,7 @@ import Data.Text               (Text)
 import Control.Monad.Reader
 import Control.Monad.IO.Class
 import Control.Monad.Trans.Control
+import Data.Auth.Token
 
 import qualified Data.Auth.Identity as Auth
 import Ogma.Model.Privilege
@@ -43,3 +44,17 @@ getUserByLogin :: (MonadBaseControl IO m, MonadIO m, Monad m)
                => Text
                -> SqlPersistT m (Maybe (Entity User))
 getUserByLogin login = getBy (UniqueLogin login)
+
+createNewDocument :: (MonadBaseControl IO m, MonadIO m, Monad m)
+                  => UserId
+                  -> Text -- title
+                  -> Text -- content
+                  -> SqlPersistT m (DocumentId, Text)
+createNewDocument id title content = do
+    now <- liftIO $ getCurrentTime
+    dir <- liftIO $ newToken64
+
+    m <- insertUnique $ Document id (unToken dir) title now now 0
+
+    case m of Just id -> return (id, unToken dir)
+              _       -> createNewDocument id title content

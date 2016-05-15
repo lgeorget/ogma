@@ -42,7 +42,7 @@ deriveJSON (defaultOptions { fieldLabelModifier = map toLower . drop 8 }) ''GetT
 data DocumentPost = DocumentPost { documentTitle   :: Text
                                  , documentContent :: Text }
   deriving (Generic)
-deriveJSON (defaultOptions { fieldLabelModifier = map toLower . drop 7 }) ''DocumentPost
+deriveJSON (defaultOptions { fieldLabelModifier = map toLower . drop 8 }) ''DocumentPost
 
 data GetDocument = GetDocument { getDocumentTitle      :: Text
                                , getDocumentContent    :: Text
@@ -60,16 +60,17 @@ type OgmaAPI = "account"
                  :> ReqBody '[JSON] GetTokenPost
                  :> Post '[JSON] GetTokenResponse
           :<|> AuthProtect "ogma-identity" :>
-                ("new_document"
-                 :> ReqBody '[JSON] DocumentPost
-                 :> PostCreated '[JSON] (Headers '[Header "resource-id" Int64] NoContent)
+                ("document"
+                   :> "new"
+                   :> ReqBody '[JSON] DocumentPost
+                   :> PostCreated '[JSON] (Headers '[Header "resource-id" Int64] NoContent)
             :<|> "document"
-                 :> Capture "id" Int64
-                 :> ReqBody '[JSON] DocumentPost
-                 :> Put '[JSON] NoContent
+                   :> Capture "id" Int64
+                   :> ReqBody '[JSON] DocumentPost
+                   :> Put '[JSON] NoContent
             :<|> "document"
-                 :> Capture "id" Int64
-                 :> Get '[JSON] GetDocument)
+                   :> Capture "id" Int64
+                   :> Get '[JSON] GetDocument)
 
 ogmaAPI :: Proxy OgmaAPI
 ogmaAPI = Proxy

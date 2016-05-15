@@ -68,7 +68,10 @@ getTokenH (GetTokenPost login) = do
 newDocumentH :: (Entity User)
              -> DocumentPost
              -> OgmaM (Headers '[Header "resource-id" Int64] NoContent)
-newDocumentH _ _ = throwError err400
+newDocumentH (Entity userId _) (DocumentPost title content) = do
+    (docId, _) <- queryDb $ createNewDocument userId title content
+
+    return $ addHeader (fromSqlKey docId) NoContent
 
 putDocumentH :: (Entity User)
              -> Int64
