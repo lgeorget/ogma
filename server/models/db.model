@@ -6,13 +6,14 @@ User
   UniqueIdentity identity
 
 Document
-  owner          UserId
-  dirname        Text
-  title          Text
-  createdon      UTCTime
-  modifiedon     UTCTime
-  size           Int
-  UniqueDirname  dirname
+  owner            UserId
+  dirname          Text
+  title            Text
+  createdon        UTCTime
+  modifiedon       UTCTime
+  size             Int
+  UniqueDirname    dirname
+  UniqueTitleOwner owner title
 
 Permission
   document       DocumentId
