@@ -34,6 +34,11 @@ createNewUser login email = do
     identity <- Auth.newIdentity
     insertUnique $ User login identity email
 
+getUserByIdentity :: (MonadBaseControl IO m, MonadIO m, Monad m)
+                  => Auth.IdentityId
+                  -> SqlPersistT m (Maybe (Entity User))
+getUserByIdentity id = do getBy (UniqueIdentity id)
+
 getUserByLogin :: (MonadBaseControl IO m, MonadIO m, Monad m)
                => Text
                -> SqlPersistT m (Maybe (Entity User))

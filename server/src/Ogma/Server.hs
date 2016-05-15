@@ -3,6 +3,7 @@
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings     #-}
+{-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE TypeOperators         #-}
 {-# LANGUAGE TypeSynonymInstances  #-}
 
@@ -18,6 +19,7 @@ import GHC.Int
 import Network.Wai
 import Network.Wai.Middleware.RequestLogger
 import Servant
+import Servant.Server.Experimental.Auth
 
 import Auth.Identity.Servant
 import Data.Auth.Identity
@@ -63,8 +65,28 @@ getTokenH (GetTokenPost login) = do
                        return $ authTokenToGetToken authTok
                      Nothing -> throwError $ err403 { errBody = "Login unknown" }
 
+newDocumentH :: (Entity User)
+             -> DocumentPost
+             -> OgmaM (Headers '[Header "resource-id" Int64] NoContent)
+newDocumentH _ _ = throwError err400
+
+putDocumentH :: (Entity User)
+             -> Int64
+             -> DocumentPost
+             -> OgmaM NoContent
+putDocumentH _ _ _ = throwError err400
+
+getDocumentH :: (Entity User)
+             -> Int64
+             -> OgmaM GetDocument
+getDocumentH _ _ = throwError err400
+
 server :: ServerT OgmaAPI OgmaM
-server = accountNewH :<|> getTokenH
+server = accountNewH
+    :<|> getTokenH
+    :<|> (\user -> (newDocumentH user
+               :<|> putDocumentH user
+               :<|> getDocumentH user))
 
 readerToExcept :: OgmaConfig
                -> OgmaM
@@ -75,6 +97,21 @@ readerServer :: OgmaConfig
              -> Server OgmaAPI
 readerServer cfg = enter (readerToExcept cfg) server
 
+ogmaIdentityHandler :: ConnectionPool
+                    -> IdentityId
+                    -> Handler (Entity User)
+ogmaIdentityHandler pool id = do
+    userMaybe <- liftIO $ runSqlPool (getUserByIdentity id) pool
+
+    case userMaybe of Just val -> return val
+                      Nothing  -> throwError (err500 { errBody = "Orphan token" })
+
+type instance AuthServerData (AuthProtect "ogma-identity") = Entity User
+
 ogmad :: OgmaConfig
       -> Application
-ogmad cfg = logStdout $ serveWithContext ogmaAPI (authIdentityServerContext $ getPool cfg) (readerServer cfg)
+ogmad cfg =
+    let pool = getPool cfg
+    in logStdout $ serveWithContext ogmaAPI
+                                    (authIdentityServerContext pool (ogmaIdentityHandler pool))
+                                    (readerServer cfg)

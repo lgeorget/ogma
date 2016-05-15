@@ -59,7 +59,7 @@ type OgmaAPI = "account"
           :<|> "get_token"
                  :> ReqBody '[JSON] GetTokenPost
                  :> Post '[JSON] GetTokenResponse
-          :<|> AuthProtect "auth-identity" :>
+          :<|> AuthProtect "ogma-identity" :>
                 ("new_document"
                  :> ReqBody '[JSON] DocumentPost
                  :> PostCreated '[JSON] (Headers '[Header "resource-id" Int64] NoContent)
