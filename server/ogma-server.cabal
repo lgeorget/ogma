@@ -33,6 +33,9 @@ library
                      , text
                      , time
                      , transformers
+                     , gitlib-libgit2
+                     , gitlib
+                     , directory
   default-language:    Haskell2010
 
 executable ogmad

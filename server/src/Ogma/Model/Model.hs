@@ -15,12 +15,15 @@ import           Control.Monad.Reader
 import           Control.Monad.Trans.Control
 import           Data.Auth.Token
 import           Data.Maybe
-import           Data.Text                   (Text)
+import           Data.Text                   (Text, unpack)
 import           Data.Time
 import           Database.Persist
 import           Database.Persist.Quasi
 import           Database.Persist.Sqlite
 import           Database.Persist.TH
+import           System.Directory
+import           Git
+import           Git.Libgit2
 
 import qualified Data.Auth.Identity          as Auth
 import           Ogma.Model.Privilege
@@ -71,9 +74,18 @@ createNewDocument id title content = do
     (docId, dir) <- case m of Just id -> return (id, unToken dir)
                               _       -> createNewDocument id title content
 
+    let dirstr = unpack dir
+    let location = (take 1 dirstr) ++ "/" ++ (take 2 dirstr) ++ "/" ++ dirstr
+    let repoOpts = RepositoryOptions { repoPath = location
+                                     , repoWorkingDir = Nothing
+                                     , repoIsBare = False
+                                     , repoAutoCreate = True
+                                     }
     createUpdateDocPerm id docId Edit
-
+    liftIO $ createDirectoryIfMissing True location
+    openRepository lgFactory repoOpts -- create the git repository for the doc
     return (docId, dir)
+
 
 getPerm :: (MonadBaseControl IO m, MonadIO m, Monad m)
         => UserId
